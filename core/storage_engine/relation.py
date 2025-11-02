@@ -15,8 +15,4 @@ class Relation:
         FileStorage.create_empty_file(self.folder, self.RELATION_FILE)
 
     def write_data(self, page_data, offset=0):
-        with open(self.path, "w+b") as f:
-            f.seek(offset)
-            f.write(page_data)
-            f.flush()
-            os.fsync(f.fileno())
+        return FileStorage.write_data(self.path, page_data, offset)

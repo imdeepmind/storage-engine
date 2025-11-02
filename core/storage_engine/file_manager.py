@@ -17,3 +17,11 @@ class FileStorage:
             os.fsync(f.fileno())
 
         return
+
+    @staticmethod
+    def write_data(path, data, offset=0):
+        with open(path, "w+b") as f:
+            f.seek(offset)
+            f.write(data)
+            f.flush()
+            os.fsync(f.fileno())
