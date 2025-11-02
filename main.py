@@ -1,4 +1,10 @@
-from core.storage_engine.file_manager import FileStorage
+import ulid
+import os
 
-FileStorage.create_folder_if_not_exists("./data/test/another/test")
-FileStorage.create_empty_file("./data/test/another/test", "data.pydb")
+from core.storage_engine.relation import Relation
+from core.constants import PAGE_SIZE
+
+
+relation = Relation(ulid.ulid())
+relation.create_relation()
+relation.write_data(os.urandom(PAGE_SIZE))

@@ -32,6 +32,9 @@ wheels = [
 name = "storage-engine"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "ulid" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -39,6 +42,13 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "ulid", specifier = ">=1.1" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "ruff", specifier = ">=0.14.3" }]
+
+[[package]]
+name = "ulid"
+version = "1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/56/d4/6829692e4902d53684b7696cf3d5158f07439ebc4bc3ca7822b5ca173e44/ulid-1.1.tar.gz", hash = "sha256:0943e8a751ec10dfcdb4df2758f96dffbbfbc055d0b49288caf2f92125900d49", size = 1174, upload-time = "2016-08-01T23:00:12.792Z" }
