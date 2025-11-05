@@ -10,18 +10,6 @@ class FileStorage:
         return folder_name
 
     @staticmethod
-    def create_empty_file(folder_path, file_name):
-        logger.debug(f"FileStorage: Creating empty file on folder {folder_path} and file {file_name}")
-        path = os.path.join(folder_path, file_name)
-
-        with open(path, "wb") as f:
-            f.write(b"")
-            f.flush()
-            os.fsync(f.fileno())
-
-        return
-
-    @staticmethod
     def write_data(path, data, offset=0):
         logger.debug(f"FileStorage: Write to file {path} with offset {offset}")
         with open(path, "w+b") as f:
