@@ -27,6 +27,9 @@ class FileStorage:
             os.fsync(f.fileno())
 
     @staticmethod
-    def read_data(path):
+    def read_data(path, offset=-1):
         with open(path, "rb") as f:
+            if offset >= 0:
+                return f.read(offset)
+
             return f.read()

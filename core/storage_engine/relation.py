@@ -2,10 +2,14 @@ import os
 import time
 import struct
 
-from core.constants import META_FORMAT, RELATION_FILE_VERSION, PAGE_SIZE, RELATION_METADATA_FILE_NAME
+from core.constants import (
+    META_FORMAT,
+    RELATION_FILE_VERSION,
+    PAGE_SIZE,
+    RELATION_METADATA_FILE_NAME,
+)
 
 from .file_manager import FileStorage
-
 
 
 class Relation:
@@ -27,14 +31,14 @@ class Relation:
     def write_metadata(self, total_pages, tail_page_id):
         data = struct.pack(
             META_FORMAT,
-            RELATION_FILE_VERSION, # version
-            PAGE_SIZE, # page_size
-            1, # TODO: Need to update this to support multiple relation files, segment_count
-            total_pages, # total_pages
-            tail_page_id, # tail_page_id
-            int(time.time()), # created_at
+            RELATION_FILE_VERSION,  # version
+            PAGE_SIZE,  # page_size
+            1,  # TODO: Need to update this to support multiple relation files, segment_count
+            total_pages,  # total_pages
+            tail_page_id,  # tail_page_id
+            int(time.time()),  # created_at
         )
-        
+
         return FileStorage.write_data(self.metadata, data)
 
     def read_metadata(self):

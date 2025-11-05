@@ -5,9 +5,7 @@ import time
 PAGE_SIZE = 8 * 1024  # 8KB
 RELATION_FILE_MAZ_SIZE = 100 * 1024  # 100KB
 RELATION_FILE_FOLDER = "relation_files"
-META_FORMAT = (
-    "<HHIQQQ"  # version, page_size, segment_count, total_pages, tail_page_id, created_at
-)
+META_FORMAT = "<HHIQQQ"  # version, page_size, segment_count, total_pages, tail_page_id, created_at
 VERSION = 1
 
 
