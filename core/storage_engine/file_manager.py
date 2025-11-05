@@ -25,3 +25,8 @@ class FileStorage:
             f.write(data)
             f.flush()
             os.fsync(f.fileno())
+
+    @staticmethod
+    def read_data(path):
+        with open(path, "rb") as f:
+            return f.read()

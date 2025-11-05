@@ -36,3 +36,7 @@ class Relation:
         )
         
         return FileStorage.write_data(self.metadata, data)
+
+    def read_metadata(self):
+        raw = FileStorage.read_data(self.metadata)
+        return struct.unpack(META_FORMAT, raw)
