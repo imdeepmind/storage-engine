@@ -31,7 +31,9 @@ class Relation:
         return FileStorage.write_data(self.path, page_data, offset)
 
     def write_metadata(self, total_pages, tail_page_id):
-        logger.debug(f"Relation: Writing relation metadata with total_pages as {total_pages} and tail_page_id as {tail_page_id}")
+        logger.debug(
+            f"Relation: Writing relation metadata with total_pages as {total_pages} and tail_page_id as {tail_page_id}"
+        )
         data = struct.pack(
             META_FORMAT,
             RELATION_FILE_VERSION,  # version

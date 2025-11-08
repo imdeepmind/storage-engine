@@ -7,9 +7,9 @@ from core.storage_engine.page import Page
 
 page = Page(ulid.ulid())
 print("===============")
-page.write_tuple_data(os.urandom(100))
+page.write_tuple_data(os.urandom(5000))
 print("===============")
-page.write_tuple_data(os.urandom(100))
+page.write_tuple_data(os.urandom(2000))
 print("===============")
 # page.write_tuple_data(os.urandom(100))
 # print("===============")

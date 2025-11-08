@@ -10,11 +10,11 @@ class ColoredFormatter(logging.Formatter):
     """Custom formatter with colors for console output."""
 
     COLORS = {
-        'DEBUG': Fore.CYAN,
-        'INFO': Fore.GREEN,
-        'WARNING': Fore.YELLOW,
-        'ERROR': Fore.RED,
-        'CRITICAL': Fore.RED + Back.WHITE
+        "DEBUG": Fore.CYAN,
+        "INFO": Fore.GREEN,
+        "WARNING": Fore.YELLOW,
+        "ERROR": Fore.RED,
+        "CRITICAL": Fore.RED + Back.WHITE,
     }
 
     def format(self, record):
@@ -23,7 +23,9 @@ class ColoredFormatter(logging.Formatter):
 
         # Add color to levelname
         if record.levelname in self.COLORS:
-            record.levelname = f"{self.COLORS[record.levelname]}{record.levelname}{Style.RESET_ALL}"
+            record.levelname = (
+                f"{self.COLORS[record.levelname]}{record.levelname}{Style.RESET_ALL}"
+            )
 
         # Format the message
         result = super().format(record)
@@ -78,7 +80,7 @@ def setup_logger(name: str = "storage_engine", level: str = "DEBUG") -> logging.
     file_handler = logging.handlers.RotatingFileHandler(
         log_dir / "storage_engine.log",
         maxBytes=10 * 1024 * 1024,  # 10MB
-        backupCount=5
+        backupCount=5,
     )
     file_handler.setLevel(getattr(logging, level.upper()))
     file_handler.setFormatter(file_formatter)

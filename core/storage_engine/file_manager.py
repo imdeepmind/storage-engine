@@ -1,6 +1,7 @@
 import os
 
 from utils import logger
+from core.constants import PAGE_SIZE
 
 class FileStorage:
     @staticmethod
@@ -19,10 +20,11 @@ class FileStorage:
             os.fsync(f.fileno())
 
     @staticmethod
-    def read_data(path, offset=-1):
-        logger.debug(f"FileStorage: Reading file {path} with offset {offset}")
+    def read_data(path, offset=-1, size=-1):
+        logger.debug(f"FileStorage: Reading file {path} from offset {offset}, size {size}")
         with open(path, "rb") as f:
             if offset >= 0:
-                return f.read(offset)
-
-            return f.read()
+                f.seek(offset)         # move file pointer to the given offset
+            if size > 0:
+                return f.read(size)    # read 'size' bytes from that position
+            return f.read()            # read entire file
