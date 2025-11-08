@@ -2,7 +2,7 @@ import time
 import struct
 
 from core.constants import PAGE_HEADER_FORMAT, PAGE_SIZE, SLOT_FORMAT
-from utils import logger
+from core.utils import logger
 
 from .file_manager import FileStorage
 from .relation import Relation

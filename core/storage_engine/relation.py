@@ -8,7 +8,7 @@ from core.constants import (
     PAGE_SIZE,
     RELATION_METADATA_FILE_NAME,
 )
-from utils import logger
+from core.utils import logger
 
 from .file_manager import FileStorage
 

@@ -1,6 +1,6 @@
 import os
 
-from utils import logger
+from core.utils import logger
 from core.constants import PAGE_SIZE
 
 class FileStorage:
