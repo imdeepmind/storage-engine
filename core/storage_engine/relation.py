@@ -10,6 +10,8 @@ from core.constants import (
 )
 from core.utils import logger
 
+from core.exceptions import FileAccessError, FileNotFoundError, DirectoryAccessError
+
 from .file_manager import FileStorage
 
 
@@ -42,8 +44,12 @@ class Relation:
         the metadata file with default values (0 total pages, tail page ID 0).
         """
         logger.debug("Relation: Creating a new Relation")
-        FileStorage.create_folder_if_not_exists(self.folder)
-        self.write_metadata(0, 0)
+        try:
+            FileStorage.create_folder_if_not_exists(self.folder)
+            self.write_metadata(0, 0)
+        except (DirectoryAccessError, FileAccessError, FileNotFoundError) as e:
+            logger.error(f"Failed to create relation for table {self.folder}: {e}")
+            raise RuntimeError(f"Unrecoverable error: Failed to create relation for table {self.folder}: {e}")
 
     def write_data(self, page_data, offset=0):
         """Write binary data to the relation file at the specified offset.
@@ -59,7 +65,11 @@ class Relation:
             None
         """
         logger.debug(f"Relation: Writing to relation file with offset {offset}")
-        return FileStorage.write_data(self.path, page_data, offset)
+        try:
+            return FileStorage.write_data(self.path, page_data, offset)
+        except (FileAccessError, FileNotFoundError) as e:
+            logger.error(f"Failed to write data to relation file {self.path}: {e}")
+            raise RuntimeError(f"Unrecoverable error: Failed to write data to relation file {self.path}: {e}")
 
     def write_metadata(self, total_pages, tail_page_id):
         """Write metadata information for the relation to its metadata file.
@@ -87,8 +97,11 @@ class Relation:
             tail_page_id,  # tail_page_id
             int(time.time()),  # created_at
         )
-
-        return FileStorage.write_data(self.metadata, data)
+        try:
+            return FileStorage.write_data(self.metadata, data)
+        except (FileAccessError, FileNotFoundError) as e:
+            logger.error(f"Failed to write metadata to {self.metadata}: {e}")
+            raise RuntimeError(f"Unrecoverable error: Failed to write metadata to {self.metadata}: {e}")
 
     def read_metadata(self):
         """Read and unpack metadata from the relation's metadata file.
@@ -103,7 +116,17 @@ class Relation:
                 - total_pages (int): Total number of pages in the relation.
                 - tail_page_id (int): ID of the last page.
                 - created_at (int): Unix timestamp when the relation was created.
+
+        Raises:
+            FileCorruptionError: If the metadata file is corrupted or has invalid format.
         """
         logger.debug("Relation: Reading the relation metadata")
-        raw = FileStorage.read_data(self.metadata)
-        return struct.unpack(META_FORMAT, raw)
+        try:
+            raw = FileStorage.read_data(self.metadata)
+            return struct.unpack(META_FORMAT, raw)
+        except (FileAccessError, FileNotFoundError) as e:
+            logger.error(f"Failed to read metadata from {self.metadata}: {e}")
+            raise RuntimeError(f"Unrecoverable error: Failed to read metadata from {self.metadata}: {e}")
+        except struct.error as e:
+            logger.error(f"Metadata file {self.metadata} is corrupted: {e}")
+            raise RuntimeError(f"Unrecoverable error: Metadata file {self.metadata} is corrupted: {e}")
