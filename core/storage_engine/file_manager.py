@@ -3,6 +3,7 @@ import os
 from core.utils import logger
 from core.exceptions import FileAccessError, FileNotFoundError, DirectoryAccessError
 
+
 class FileStorage:
     """A class for handling file storage operations such as creating folders, writing data, and reading data."""
 
@@ -70,14 +71,16 @@ class FileStorage:
             FileAccessError: If there are permission issues or OS errors during reading.
             FileNotFoundError: If the file does not exist.
         """
-        logger.debug(f"FileStorage: Reading file {path} from offset {offset}, size {size}")
+        logger.debug(
+            f"FileStorage: Reading file {path} from offset {offset}, size {size}"
+        )
         try:
             with open(path, "rb") as f:
                 if offset >= 0:
-                    f.seek(offset)         # move file pointer to the given offset
+                    f.seek(offset)  # move file pointer to the given offset
                 if size > 0:
-                    return f.read(size)    # read 'size' bytes from that position
-                return f.read()            # read entire file
+                    return f.read(size)  # read 'size' bytes from that position
+                return f.read()  # read entire file
         except FileNotFoundError:
             raise FileNotFoundError(f"File not found: {path}")
         except PermissionError:

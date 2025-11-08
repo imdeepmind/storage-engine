@@ -75,7 +75,9 @@ class Page:
     def read_page(self, page_id, raw_page=None):
         logger.debug(f"Page: Reading page from file or stream with page_id={page_id}")
         if not raw_page:
-            raw_page = FileStorage.read_data(self.relation.path, page_id * PAGE_SIZE, PAGE_SIZE)
+            raw_page = FileStorage.read_data(
+                self.relation.path, page_id * PAGE_SIZE, PAGE_SIZE
+            )
 
         header = struct.unpack(PAGE_HEADER_FORMAT, raw_page[:PAGE_HEADER_SIZE])
         page_id, lower, upper, free_space, tuple_count, created_at = header
@@ -109,17 +111,17 @@ class Page:
         tail_page_id = metadata[4]
         tuple_size = len(tuple_data)
         needed_space = tuple_size + SLOT_SIZE
-        
+
         if needed_space > (PAGE_SIZE - PAGE_HEADER_SIZE - SLOT_SIZE):
-            raise CurrentlyNotSupported("Large tuples that are bigger the page cannot be saved, this feature will come in future.")
+            raise CurrentlyNotSupported(
+                "Large tuples that are bigger the page cannot be saved, this feature will come in future."
+            )
 
         # if there is no page, initialize a empty page
         if total_pages <= 0:
             logger.debug("Page: There is no existing page, getting a page")
             total_pages += 1
-            page_data = self.read_page(
-                tail_page_id, self.__get_empty_page()
-            )
+            page_data = self.read_page(tail_page_id, self.__get_empty_page())
         else:
             page_data = self.read_page(tail_page_id)
 
@@ -128,7 +130,7 @@ class Page:
             page_data = self.read_page(
                 tail_page_id, self.__get_empty_page(tail_page_id)
             )
-        
+
         (
             page_id,
             lower,
@@ -150,6 +152,4 @@ class Page:
             tuple_size,
             total_pages,
         )
-        self.relation.write_metadata(
-            total_pages, tail_page_id
-        )
+        self.relation.write_metadata(total_pages, tail_page_id)

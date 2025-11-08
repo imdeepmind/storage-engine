@@ -49,7 +49,9 @@ class Relation:
             self.write_metadata(0, 0)
         except (DirectoryAccessError, FileAccessError, FileNotFoundError) as e:
             logger.error(f"Failed to create relation for table {self.folder}: {e}")
-            raise RuntimeError(f"Unrecoverable error: Failed to create relation for table {self.folder}: {e}")
+            raise RuntimeError(
+                f"Unrecoverable error: Failed to create relation for table {self.folder}: {e}"
+            )
 
     def write_data(self, page_data, offset=0):
         """Write binary data to the relation file at the specified offset.
@@ -69,7 +71,9 @@ class Relation:
             return FileStorage.write_data(self.path, page_data, offset)
         except (FileAccessError, FileNotFoundError) as e:
             logger.error(f"Failed to write data to relation file {self.path}: {e}")
-            raise RuntimeError(f"Unrecoverable error: Failed to write data to relation file {self.path}: {e}")
+            raise RuntimeError(
+                f"Unrecoverable error: Failed to write data to relation file {self.path}: {e}"
+            )
 
     def write_metadata(self, total_pages, tail_page_id):
         """Write metadata information for the relation to its metadata file.
@@ -101,7 +105,9 @@ class Relation:
             return FileStorage.write_data(self.metadata, data)
         except (FileAccessError, FileNotFoundError) as e:
             logger.error(f"Failed to write metadata to {self.metadata}: {e}")
-            raise RuntimeError(f"Unrecoverable error: Failed to write metadata to {self.metadata}: {e}")
+            raise RuntimeError(
+                f"Unrecoverable error: Failed to write metadata to {self.metadata}: {e}"
+            )
 
     def read_metadata(self):
         """Read and unpack metadata from the relation's metadata file.
@@ -126,7 +132,11 @@ class Relation:
             return struct.unpack(META_FORMAT, raw)
         except (FileAccessError, FileNotFoundError) as e:
             logger.error(f"Failed to read metadata from {self.metadata}: {e}")
-            raise RuntimeError(f"Unrecoverable error: Failed to read metadata from {self.metadata}: {e}")
+            raise RuntimeError(
+                f"Unrecoverable error: Failed to read metadata from {self.metadata}: {e}"
+            )
         except struct.error as e:
             logger.error(f"Metadata file {self.metadata} is corrupted: {e}")
-            raise RuntimeError(f"Unrecoverable error: Metadata file {self.metadata} is corrupted: {e}")
+            raise RuntimeError(
+                f"Unrecoverable error: Metadata file {self.metadata} is corrupted: {e}"
+            )
