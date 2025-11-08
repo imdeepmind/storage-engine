@@ -116,6 +116,8 @@ class Page:
         self.relation.write_data(page, tail_page_id * PAGE_SIZE)
         self.relation.write_metadata(total_pages, tail_page_id)
 
+        return tail_page_id, new_upper
+
     def read_page(self, page_id, raw_page=None):
         """Read and parse a page from the relation file.
 
@@ -205,7 +207,7 @@ class Page:
             page,
         ) = page_data
 
-        self.__write_to_new_page(
+        page_id, slot_id = self.__write_to_new_page(
             tuple_data,
             page_id,
             lower,
@@ -216,3 +218,5 @@ class Page:
             total_pages,
         )
         self.relation.write_metadata(total_pages, tail_page_id)
+
+        return page_id, slot_id
