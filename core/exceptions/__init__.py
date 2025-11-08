@@ -1,11 +1,12 @@
 """Exceptions module for the storage engine."""
 
-from .storage_exceptions import (
+from .exceptions import (
     StorageException,
     FileAccessError,
     FileNotFoundError,
     FileCorruptionError,
     DirectoryAccessError,
+    CurrentlyNotSupported,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "FileNotFoundError",
     "FileCorruptionError",
     "DirectoryAccessError",
+    "CurrentlyNotSupported",
 ]

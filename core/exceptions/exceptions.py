@@ -24,3 +24,7 @@ class FileCorruptionError(StorageException):
 class DirectoryAccessError(StorageException):
     """Raised when there is an issue accessing or creating directories."""
     pass
+
+class CurrentlyNotSupported(StorageException):
+    """Raised when some feature is not yet supported"""
+    pass
