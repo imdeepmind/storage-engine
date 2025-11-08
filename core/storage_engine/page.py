@@ -13,13 +13,37 @@ SLOT_SIZE = struct.calcsize(SLOT_FORMAT)
 
 
 class Page:
+    """Represents a page in the storage engine for managing tuple data.
+
+    This class handles the creation, reading, and writing of pages within a relation.
+    A page contains a header with metadata, a slot array for tuple offsets, and the actual tuple data.
+    """
+
     def __init__(self, table_id):
+        """Initialize a Page instance for a specific table.
+
+        Creates a new relation for the table if it doesn't exist.
+
+        Args:
+            table_id (str): The unique identifier for the table.
+        """
         self.relation = Relation(table_id)
         self.relation.create_relation()
 
     def __get_metadata(
         self, page_id, lower=PAGE_HEADER_SIZE, upper=PAGE_SIZE, tuple_count=0
     ):
+        """Generate formatted metadata for a page header.
+
+        Args:
+            page_id (int): The unique identifier for the page.
+            lower (int, optional): Offset where the slot array ends. Defaults to PAGE_HEADER_SIZE.
+            upper (int, optional): Offset where free space ends. Defaults to PAGE_SIZE.
+            tuple_count (int, optional): Number of tuples in the page. Defaults to 0.
+
+        Returns:
+            bytes: Packed header data.
+        """
         logger.debug(
             f"Page: Getting formatted metadata with page_id={page_id}, lower={lower}, upper={upper}, tuple_count={tuple_count}"
         )
@@ -36,6 +60,14 @@ class Page:
         return header_data
 
     def __get_empty_page(self, tail_page_id=-1):
+        """Create an empty page with initialized header.
+
+        Args:
+            tail_page_id (int, optional): The ID of the last page. Defaults to -1.
+
+        Returns:
+            bytearray: An empty page with header initialized.
+        """
         logger.debug(f"Page: Getting an empty page with tail_page_id={tail_page_id}")
         page_id = tail_page_id + 1
         page = bytearray(PAGE_SIZE)
@@ -56,6 +88,18 @@ class Page:
         tuple_size,
         total_pages,
     ):
+        """Write tuple data to a new page and update metadata.
+
+        Args:
+            tuple_data (bytes): The tuple data to write.
+            tail_page_id (int): The ID of the tail page.
+            lower (int): Current lower offset.
+            upper (int): Current upper offset.
+            tuple_count (int): Current tuple count.
+            page (bytearray): The page buffer.
+            tuple_size (int): Size of the tuple data.
+            total_pages (int): Total number of pages.
+        """
         new_upper = upper - tuple_size
         new_lower = lower + SLOT_SIZE
 
@@ -73,6 +117,15 @@ class Page:
         self.relation.write_metadata(total_pages, tail_page_id)
 
     def read_page(self, page_id, raw_page=None):
+        """Read and parse a page from the relation file.
+
+        Args:
+            page_id (int): The ID of the page to read.
+            raw_page (bytes, optional): Raw page data if already available. Defaults to None.
+
+        Returns:
+            tuple: A tuple containing (page_id, lower, upper, free_space, tuple_count, created_at, slots, page_data).
+        """
         logger.debug(f"Page: Reading page from file or stream with page_id={page_id}")
         if not raw_page:
             raw_page = FileStorage.read_data(
@@ -104,6 +157,16 @@ class Page:
         )
 
     def write_page(self, tuple_data):
+        """Write tuple data to an appropriate page in the relation.
+
+        This method handles page allocation and writing tuple data, creating new pages as needed.
+
+        Args:
+            tuple_data (bytes): The tuple data to write.
+
+        Raises:
+            CurrentlyNotSupported: If the tuple is too large for a single page.
+        """
         logger.debug("Page: Writing new tuple data")
         # get total_pages and tail_page_id
         metadata = self.relation.read_metadata()
