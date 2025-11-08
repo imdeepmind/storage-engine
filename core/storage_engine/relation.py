@@ -42,6 +42,9 @@ class Relation:
 
         This method creates the data folder for the table if it doesn't exist and initializes
         the metadata file with default values (0 total pages, tail page ID 0).
+
+        Raises:
+            RuntimeError: If there are unrecoverable I/O errors during relation creation.
         """
         logger.debug("Relation: Creating a new Relation")
         try:
@@ -65,6 +68,9 @@ class Relation:
 
         Returns:
             None
+
+        Raises:
+            RuntimeError: If there are unrecoverable I/O errors during data writing.
         """
         logger.debug(f"Relation: Writing to relation file with offset {offset}")
         try:
@@ -88,6 +94,9 @@ class Relation:
 
         Returns:
             None
+
+        Raises:
+            RuntimeError: If there are unrecoverable I/O errors during metadata writing.
         """
         logger.debug(
             f"Relation: Writing relation metadata with total_pages as {total_pages} and tail_page_id as {tail_page_id}"
@@ -124,7 +133,7 @@ class Relation:
                 - created_at (int): Unix timestamp when the relation was created.
 
         Raises:
-            FileCorruptionError: If the metadata file is corrupted or has invalid format.
+            RuntimeError: If there are unrecoverable I/O errors or metadata corruption.
         """
         logger.debug("Relation: Reading the relation metadata")
         try:

@@ -3,7 +3,7 @@ import struct
 
 from core.constants import PAGE_HEADER_FORMAT, PAGE_SIZE, SLOT_FORMAT
 from core.utils import logger
-from core.exceptions import CurrentlyNotSupported
+from core.exceptions import CurrentlyNotSupported, FileAccessError, FileNotFoundError
 
 from .file_manager import FileStorage
 from .relation import Relation
@@ -99,6 +99,9 @@ class Page:
             page (bytearray): The page buffer.
             tuple_size (int): Size of the tuple data.
             total_pages (int): Total number of pages.
+
+        Returns:
+            tuple: A tuple containing (page_id, slot_offset).
         """
         new_upper = upper - tuple_size
         new_lower = lower + SLOT_SIZE
@@ -127,11 +130,22 @@ class Page:
 
         Returns:
             tuple: A tuple containing (page_id, lower, upper, free_space, tuple_count, created_at, slots, page_data).
+
+        Raises:
+            RuntimeError: If there are unrecoverable I/O errors during page reading.
         """
         logger.debug(f"Page: Reading page from file or stream with page_id={page_id}")
-        if not raw_page:
-            raw_page = FileStorage.read_data(
-                self.relation.path, page_id * PAGE_SIZE, PAGE_SIZE
+        try:
+            if not raw_page:
+                raw_page = FileStorage.read_data(
+                    self.relation.path, page_id * PAGE_SIZE, PAGE_SIZE
+                )
+        except (FileAccessError, FileNotFoundError) as e:
+            logger.error(
+                f"Failed to read page {page_id} from relation {self.relation.path}: {e}"
+            )
+            raise RuntimeError(
+                f"Unrecoverable error: Failed to read page {page_id}: {e}"
             )
 
         header = struct.unpack(PAGE_HEADER_FORMAT, raw_page[:PAGE_HEADER_SIZE])
@@ -165,6 +179,9 @@ class Page:
 
         Args:
             tuple_data (bytes): The tuple data to write.
+
+        Returns:
+            tuple: A tuple containing (page_id, slot_id) where the tuple was written.
 
         Raises:
             CurrentlyNotSupported: If the tuple is too large for a single page.
