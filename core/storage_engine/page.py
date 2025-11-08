@@ -79,6 +79,8 @@ class Page:
         metadata = self.relation.read_metadata()
         total_pages = metadata[3]
         tail_page_id = metadata[4]
+        tuple_size = len(tuple_data)
+        needed_space = tuple_size + SLOT_SIZE
 
         # if there is no page, initialize a empty page
         if total_pages <= 0:
@@ -90,41 +92,36 @@ class Page:
         else:
             page_data = self.read_page(tail_page_id)
 
+        if needed_space > page_data[3]:
+            total_pages += 1
+            page_data = self.read_page(
+                tail_page_id, self.__get_empty_page(tail_page_id)
+            )
+        
         (
             page_id,
             lower,
             upper,
-            free_space,
+            _,
             tuple_count,
             _,
             _,
             page,
         ) = page_data
 
-        tuple_size = len(tuple_data)
-        needed_space = tuple_size + SLOT_SIZE
-
-        if free_space >= needed_space:
-            logger.debug("Page: We have enough space to store the tuple in page")
-            # we can fit the data in the page
-            self.__create_new_page(
-                tuple_data,
-                page_id,
-                lower,
-                upper,
-                tuple_count,
-                page,
-                tuple_size,
-                total_pages,
-            )
-        else:
-            # create a new page
-            logger.error("Page: There is no space to store the tuple")
-            # well there is no page, so create a new page
-            # then do the same thing as im doing
-            pass
-        
-        # TODO: Update the relation file metadata
+        self.__create_new_page(
+            tuple_data,
+            page_id,
+            lower,
+            upper,
+            tuple_count,
+            page,
+            tuple_size,
+            total_pages,
+        )
+        self.relation.write_metadata(
+            total_pages, tail_page_id
+        )
 
     def __create_new_page(
         self,
